@@ -18,7 +18,7 @@ func main() {
 
 	gi := gin.New()
 	gi.GET("/api/account", func(context *gin.Context) {
-		context.JSON(http.StatusOK, gin.H{"ant creatures": "are undeerrrated"})
+		context.JSON(http.StatusOK, gin.H{"ant creatures": "are undeerrxrated"})
 	})
 
 	//	::: SERVER setup
