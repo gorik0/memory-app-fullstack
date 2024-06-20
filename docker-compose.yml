@@ -21,6 +21,8 @@ services:
       context: ./account
       target: builder
     image: account
+    env_file: .env
+
     ports:
       - "9001:9000"
     labels:

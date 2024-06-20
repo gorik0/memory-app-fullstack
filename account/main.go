@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"log"
+	"memory-app/handler"
 	"net/http"
 	"os"
 	"os/signal"
@@ -16,12 +17,11 @@ func main() {
 
 	//	::: ROUTER setup
 
-	gi := gin.New()
-	gi.GET("/api/account", func(context *gin.Context) {
-		context.JSON(http.StatusOK, gin.H{"ant creaturesss": "are cool"})
+	gi := gin.Default()
 
+	handler.NewHandler(&handler.Config{
+		Engine: gi,
 	})
-
 	//	::: SERVER setup
 
 	server := http.Server{
