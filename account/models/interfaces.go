@@ -6,10 +6,10 @@ import (
 )
 
 //go:generate mockery --name UserService
-type UserService interface {
-	Get(context context.Context,uid uuid.UUID) (*User, error)
+type UserServiceI interface {
+	Get(context context.Context, uid uuid.UUID) (*User, error)
 }
 
-type UserRepo interface {
-	GetById(uid uuid.UUID) (*User, error)
+type UserRepositoryI interface {
+	GetById(ctx context.Context, uid uuid.UUID) (*User, error)
 }

@@ -8,7 +8,7 @@ import (
 )
 
 type Handler struct {
-	UserService models.UserService
+	UserService models.UserServiceI
 }
 
 func (h *Handler) Signin(ctx *gin.Context) {
@@ -49,7 +49,7 @@ func (h *Handler) Details(ctx *gin.Context) {
 
 type Config struct {
 	Engine      *gin.Engine
-	UserService models.UserService
+	UserService models.UserServiceI
 }
 
 // :: HANDLER ENDPOINTS setup
