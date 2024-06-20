@@ -2,17 +2,13 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"memory-app/models"
 	"net/http"
 	"os"
 )
 
 type Handler struct {
-}
-
-func (h *Handler) MeAbout(ctx *gin.Context) {
-
-	ctx.JSON(http.StatusOK, gin.H{"say": "MeAbout"})
-
+	UserService models.UserService
 }
 
 func (h *Handler) Signin(ctx *gin.Context) {
@@ -52,11 +48,15 @@ func (h *Handler) Details(ctx *gin.Context) {
 }
 
 type Config struct {
-	Engine *gin.Engine
+	Engine      *gin.Engine
+	UserService models.UserService
 }
 
+// :: HANDLER ENDPOINTS setup
 func NewHandler(c *Config) {
-	h := Handler{}
+	h := Handler{
+		UserService: c.UserService,
+	}
 
 	group := c.Engine.Group(os.Getenv("ACCOUNT_API_URL"))
 	group.GET("/me", h.MeAbout)
