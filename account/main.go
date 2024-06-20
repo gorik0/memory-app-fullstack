@@ -18,7 +18,8 @@ func main() {
 
 	gi := gin.New()
 	gi.GET("/api/account", func(context *gin.Context) {
-		context.JSON(http.StatusOK, gin.H{"ant creatures": "are undeerrxrated"})
+		context.JSON(http.StatusOK, gin.H{"ant creaturesss": "are cool"})
+
 	})
 
 	//	::: SERVER setup
@@ -30,7 +31,7 @@ func main() {
 	//	::: SERVER run
 
 	if err := server.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
-		log.Fatalf("Error while runnong server :::: %s", err)
+		log.Fatalf("Error while running server :::: %s", err)
 	}
 
 	quit := make(chan os.Signal)
