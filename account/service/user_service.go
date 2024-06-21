@@ -2,7 +2,9 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/google/uuid"
+	"log"
 	"memory-app/account/models"
 )
 
@@ -11,8 +13,20 @@ type UserService struct {
 }
 
 func (u *UserService) Signup(context context.Context, user *models.User) error {
-	//TODO implement me
-	panic("implement me")
+	hash, err := generateHashPassword(user.Password)
+	if err != nil {
+		e := fmt.Errorf("Unable generatePassword for user : %v\n", user)
+		log.Printf(e.Error())
+		return e
+
+	}
+	user.Password = hash
+
+	err = u.UserRepository.Create(context, user)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 type UserServiceConfig struct {

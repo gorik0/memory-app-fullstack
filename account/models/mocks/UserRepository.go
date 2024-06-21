@@ -11,6 +11,17 @@ type UserRepository struct {
 	mock.Mock
 }
 
+func (u *UserRepository) Create(ctx context.Context, user *models.User) error {
+	ret := u.Called(ctx, user)
+
+	var r0 error
+	if ret.Get(0) != nil {
+		r0 = ret.Get(0).(error)
+	}
+
+	return r0
+}
+
 func (u *UserRepository) GetById(ctx context.Context, uid uuid.UUID) (*models.User, error) {
 	ret := u.Called(ctx, uid)
 
