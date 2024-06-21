@@ -30,6 +30,12 @@ func (h *Handler) Signup(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"ok": true})
+	token, err := h.TokenService.GetPairForUser(ctx, user, "")
+	if err != nil {
+		log.Printf("Fail to create token for user (%v) ::: %v \n", user, err.Error())
+		ctx.JSON(apprerrors.Status(err), gin.H{"error": err})
+		return
+	}
+	ctx.JSON(http.StatusCreated, gin.H{"token": token})
 
 }

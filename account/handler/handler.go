@@ -8,7 +8,8 @@ import (
 )
 
 type Handler struct {
-	UserService models.UserServiceI
+	UserService  models.UserServiceI
+	TokenService models.TokenServiceI
 }
 
 func (h *Handler) Signin(ctx *gin.Context) {
@@ -42,13 +43,15 @@ func (h *Handler) Details(ctx *gin.Context) {
 }
 
 type Config struct {
-	Engine      *gin.Engine
-	UserService models.UserServiceI
+	Engine        *gin.Engine
+	UserService   models.UserServiceI
+	TokenServiceI models.TokenServiceI
 }
 
 func NewHandler(c *Config) {
 	h := Handler{
-		UserService: c.UserService,
+		UserService:  c.UserService,
+		TokenService: c.TokenServiceI,
 	}
 
 	group := c.Engine.Group(os.Getenv("ACCOUNT_API_URL"))

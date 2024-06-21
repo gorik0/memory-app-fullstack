@@ -11,6 +11,9 @@ type UserServiceI interface {
 	Signup(context.Context, *User) error
 }
 
+type TokenServiceI interface {
+	GetPairForUser(context context.Context, u *User, prevIdToken string) (*TokenPair, error)
+}
 type UserRepositoryI interface {
 	GetById(ctx context.Context, uid uuid.UUID) (*User, error)
 }
