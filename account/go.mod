@@ -1,4 +1,4 @@
-module memory-app
+module memory-app/account
 
 go 1.22.4
 

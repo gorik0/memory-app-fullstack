@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"log"
-	"memory-app/handler"
+	"memory-app/account/handler"
 	"net/http"
 	"os"
 	"os/signal"

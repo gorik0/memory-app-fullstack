@@ -3,11 +3,16 @@ package service
 import (
 	"context"
 	"github.com/google/uuid"
-	"memory-app/models"
+	"memory-app/account/models"
 )
 
 type UserService struct {
 	UserRepository models.UserRepositoryI
+}
+
+func (u *UserService) Signup(context context.Context, user *models.User) error {
+	//TODO implement me
+	panic("implement me")
 }
 
 type UserServiceConfig struct {

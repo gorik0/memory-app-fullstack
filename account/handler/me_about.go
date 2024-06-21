@@ -3,8 +3,8 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"log"
-	"memory-app/models"
-	"memory-app/models/apprerrors"
+	"memory-app/account/models"
+	"memory-app/account/models/apprerrors"
 	"net/http"
 )
 

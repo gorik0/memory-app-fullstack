@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
-	"memory-app/models"
+	"memory-app/account/models"
 )
 
 type UserRepository struct {

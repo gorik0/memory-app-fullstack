@@ -6,8 +6,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"memory-app/models"
-	"memory-app/models/mocks"
+	"memory-app/account/models"
+	"memory-app/account/models/mocks"
 	"testing"
 )
 

@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"memory-app/models"
+	"memory-app/account/models"
 	"net/http"
 	"os"
 )
@@ -20,12 +20,6 @@ func (h *Handler) Signin(ctx *gin.Context) {
 func (h *Handler) Signout(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"say": "Signout"})
-
-}
-
-func (h *Handler) Signup(ctx *gin.Context) {
-
-	ctx.JSON(http.StatusOK, gin.H{"say": "Signup"})
 
 }
 
@@ -52,7 +46,6 @@ type Config struct {
 	UserService models.UserServiceI
 }
 
-// :: HANDLER ENDPOINTS setup
 func NewHandler(c *Config) {
 	h := Handler{
 		UserService: c.UserService,

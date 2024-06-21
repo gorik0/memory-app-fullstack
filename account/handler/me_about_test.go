@@ -7,9 +7,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"memory-app/models"
-	"memory-app/models/apprerrors"
-	"memory-app/models/mocks"
+	"memory-app/account/models"
+	"memory-app/account/models/apprerrors"
+	"memory-app/account/models/mocks"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -31,7 +31,7 @@ func TestHandler_MeAbout(t *testing.T) {
 		}
 
 		//::USER SERVICE mock via mockery
-		userServiceMock := mocks.NewUserService(t)
+		userServiceMock := mocks.NewUserServiceI(t)
 		userServiceMock.On("Get", mock.AnythingOfType("*gin.Context"), mockUid).Return(mockUser, nil)
 
 		router := gin.Default()
@@ -68,7 +68,7 @@ func TestHandler_MeAbout(t *testing.T) {
 		assert.NoError(t, err)
 
 		//::USER SERVICE mock via mockery
-		userServiceMock := mocks.NewUserService(t)
+		userServiceMock := mocks.NewUserServiceI(t)
 		userServiceMock.On("Get", mock.Anything, mockUid).Return(nil, fmt.Errorf("erro while getting user from down"))
 
 		router := gin.Default()
@@ -105,7 +105,7 @@ func TestHandler_MeAbout(t *testing.T) {
 	t.Run("GetWithNoContext", func(t *testing.T) {
 
 		//::USER SERVICE mock via mockery
-		mockUserService := mocks.NewUserService(t)
+		mockUserService := mocks.NewUserServiceI(t)
 		//mockUserService.On("Get", mock.Anything, mock.Anything).Return(nil, nil)
 
 		// a response recorder for getting written http response
