@@ -43,7 +43,7 @@ func generateRefreshToken(uid uuid.UUID, secret string) (*RefreshToken, error) {
 
 	//:::TOKEN setup
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, customClaims)
-	signedToken, err := token.SignedString(secret)
+	signedToken, err := token.SignedString([]byte(secret))
 
 	if err != nil {
 		log.Println("Failed to sign refresh token string")
