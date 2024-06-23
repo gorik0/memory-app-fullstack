@@ -2,11 +2,14 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"io/ioutil"
 	"memory-app/account/models"
+	"memory-app/account/models/mocks"
 	"testing"
 	"time"
 )
@@ -18,25 +21,43 @@ func TestNewPairFromUser(t *testing.T) {
 	publicKey, _ := jwt.ParseRSAPublicKeyFromPEM(publicString)
 	secret := "egoriktestownservice"
 
-	tokenService := NewTokenService(&ConfigTokenService{
-		PrivKey:       privKey,
-		PublKey:       publicKey,
-		RefreshSecret: secret,
-		RefreshExp:    "20000",
-		IdExp:         "900",
-	})
-
-	uid, _ := uuid.NewRandom()
+	//uid, _ := uuid.NewRandom()
+	userIDsuccess, _ := uuid.NewRandom()
+	userIDfail, _ := uuid.NewRandom()
 	user := &models.User{
-		UID:      uid,
+		UID:      userIDsuccess,
 		Email:    "gorik@ko.ru",
 		Password: "213123124",
 	}
 
+	tokenRepoMock := new(mocks.TokenRepo)
+	argsSuccess := mock.Arguments{
+		mock.AnythingOfType("context.backgroundCtx"),
+		userIDsuccess.String(),
+		mock.Anything,
+		mock.AnythingOfType("time.Duration"),
+	}
+	argsFail := mock.Arguments{
+		mock.AnythingOfType("context.backgroundCtx"),
+		userIDfail.String(),
+		mock.Anything,
+		mock.AnythingOfType("time.Duration"),
+	}
+	tokenRepoMock.On("SetRefreshToken", argsSuccess...).Return(nil)
+	tokenRepoMock.On("SetRefreshToken", argsFail...).Return(fmt.Errorf("SOME errr...."))
+
+	tokenService := NewTokenService(&ConfigTokenService{
+		PrivKey:         privKey,
+		PublKey:         publicKey,
+		RefreshSecret:   secret,
+		RefreshExp:      "20000",
+		IdExp:           "900",
+		TokenRepository: tokenRepoMock,
+	})
 	t.Run("RETURN corerct token", func(t *testing.T) {
 
-		ctx := context.TODO()
-
+		ctx := context.Background()
+		//user.UID = userIDsuccess
 		//::TOKEN pair creating
 		tokenPair, err := tokenService.GetPairForUser(ctx, user, "")
 		assert.NoError(t, err)
@@ -79,6 +100,20 @@ func TestNewPairFromUser(t *testing.T) {
 		expiredActualRefr := customClaims.ExpiresAt
 
 		assert.WithinDuration(t, expiredActualRefr.Time, expiredExpectedRefr, time.Second*5)
+
+	})
+	t.Run("Fail to refresh in redis ", func(t *testing.T) {
+
+		ctx := context.Background()
+		user.UID = userIDfail
+		//::TOKE_ = tokN pair creating
+		tokenPair, err := tokenService.GetPairForUser(ctx, user, "")
+		assert.Error(t, err)
+		println(err.Error())
+		//::ID token parsing & asserting
+
+		tokenRepoMock.AssertNotCalled(t, "DeleteRefreshToken")
+		_ = tokenPair
 
 	})
 
