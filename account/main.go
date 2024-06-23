@@ -3,9 +3,7 @@ package main
 import (
 	"context"
 	"errors"
-	"github.com/gin-gonic/gin"
 	"log"
-	"memory-app/account/handler"
 	"net/http"
 	"os"
 	"os/signal"
@@ -15,13 +13,18 @@ import (
 
 func main() {
 
-	//	::: ROUTER setup
+	//	::: DATA SOURCE setup
 
-	gi := gin.Default()
+	ds, err := initDS()
+	if err != nil {
+		log.Fatalf("dta source init ::: %s", err.Error())
+	}
+	//:::INJECTING DATA SOURCE / ROUTER setup
+	gi, err := inject(ds)
+	if err != nil {
+		log.Fatalf("injecting data source  ::: %s", err.Error())
 
-	handler.NewHandler(&handler.Config{
-		Engine: gi,
-	})
+	}
 	//	::: SERVER setup
 
 	server := http.Server{

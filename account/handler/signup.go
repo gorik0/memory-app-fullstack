@@ -17,15 +17,15 @@ func (h *Handler) Signup(ctx *gin.Context) {
 
 	var req SignUpRequest
 
-	if ok := BindData(ctx, req); !ok {
+	if ok := BindData(ctx, &req); !ok {
 		return
 	}
-
+	log.Println(req)
 	user := &models.User{Email: req.Email, Password: req.Password}
 
 	err := h.UserService.Signup(ctx, user)
 	if err != nil {
-		log.Printf("Fail to craete user signup ::: %s \n", err)
+		log.Printf("Fail to create user signup ::: %s \n", err)
 		ctx.JSON(apprerrors.Status(err), gin.H{"error": err})
 		return
 	}

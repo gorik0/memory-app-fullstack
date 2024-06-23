@@ -30,7 +30,7 @@ func generateRefreshToken(uid uuid.UUID, secret string) (*RefreshToken, error) {
 	tokenExp := currentTime.AddDate(0, 0, 3)
 
 	tokenID, _ := uuid.NewRandom()
-
+	println(secret)
 	//:::CLAIMS setup
 	customClaims := RefreshTokenCustomClaims{
 		Uid: uid,

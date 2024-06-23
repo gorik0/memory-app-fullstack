@@ -15,7 +15,7 @@ type invalidArg struct {
 	Param string `json:"param"`
 }
 
-func BindData(ctx *gin.Context, req SignUpRequest) bool {
+func BindData(ctx *gin.Context, req *SignUpRequest) bool {
 
 	err := ctx.ShouldBind(&req)
 	if err != nil {
