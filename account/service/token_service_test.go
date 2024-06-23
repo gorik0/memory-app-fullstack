@@ -22,6 +22,8 @@ func TestNewPairFromUser(t *testing.T) {
 		PrivKey:       privKey,
 		PublKey:       publicKey,
 		RefreshSecret: secret,
+		RefreshExp:    "20000",
+		IdExp:         "900",
 	})
 
 	uid, _ := uuid.NewRandom()

@@ -32,7 +32,7 @@ func TestHandler_MeAbout(t *testing.T) {
 
 		//::USER SERVICE mock via mockery
 		userServiceMock := mocks.NewUserServiceI(t)
-		userServiceMock.On("Get", mock.AnythingOfType("*gin.Context"), mockUid).Return(mockUser, nil)
+		userServiceMock.On("Get", mock.AnythingOfType("context.backgroundCtx"), mockUid).Return(mockUser, nil)
 
 		router := gin.Default()
 		router.Use(func(context *gin.Context) {

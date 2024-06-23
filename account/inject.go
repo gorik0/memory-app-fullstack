@@ -48,12 +48,14 @@ func inject(ds *dataSources) (*gin.Engine, error) {
 	}
 	secret := os.Getenv("REFRESH_SECRET")
 
+	tokenRepo := repository.NewTokenRepo(ds.Redis)
 	tokenService := service.NewTokenService(&service.ConfigTokenService{
-		PrivKey:       privKey,
-		PublKey:       publicKey,
-		RefreshSecret: secret,
-		RefreshExp:    refreshExp,
-		IdExp:         idExp,
+		PrivKey:         privKey,
+		PublKey:         publicKey,
+		RefreshSecret:   secret,
+		RefreshExp:      refreshExp,
+		IdExp:           idExp,
+		TokenRepository: tokenRepo,
 	})
 
 	//::: USER  SERVICE

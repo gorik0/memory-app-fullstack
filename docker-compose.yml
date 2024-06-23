@@ -36,7 +36,12 @@ services:
       - ./account:/go/src/app
     # have to use $$ (double-dollar) so docker doesn't try to substitute a variable
     command: reflex -r "\.go$$" -s -- sh -c "go run ./"
-
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    volumes:
+      - "redisdata:/data"
   postgres-account:
     image: "postgres:alpine"
     environment:
@@ -53,3 +58,4 @@ services:
     command: ["postgres", "-c", "log_statement=all"]
 volumes:
     pgdata_account:
+    redisdata:
