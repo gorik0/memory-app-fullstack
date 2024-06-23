@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"memory-app/account/models"
 	"net/http"
-	"os"
 )
 
 type Handler struct {
@@ -46,6 +45,7 @@ type Config struct {
 	Engine        *gin.Engine
 	UserService   models.UserServiceI
 	TokenServiceI models.TokenServiceI
+	BaseURL       string
 }
 
 func NewHandler(c *Config) {
@@ -54,7 +54,7 @@ func NewHandler(c *Config) {
 		TokenService: c.TokenServiceI,
 	}
 
-	group := c.Engine.Group(os.Getenv("ACCOUNT_API_URL"))
+	group := c.Engine.Group(c.BaseURL)
 	group.GET("/me", h.MeAbout)
 	group.POST("/signin", h.Signin)
 	group.POST("/signout", h.Signout)

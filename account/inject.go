@@ -21,6 +21,9 @@ func inject(ds *dataSources) (*gin.Engine, error) {
 	})
 	//::: TOKEN  SERVICE
 
+	refreshExp := os.Getenv("ID_TOKEN_EXPIRED")
+	idExp := os.Getenv("REFRESH_TOKEN_EXPIRED")
+
 	privateString, err := os.ReadFile(os.Getenv("PRIVATE_KEY_FILE"))
 	if err != nil {
 		return nil, fmt.Errorf("while reading private key file ::: %w", err)
@@ -49,15 +52,19 @@ func inject(ds *dataSources) (*gin.Engine, error) {
 		PrivKey:       privKey,
 		PublKey:       publicKey,
 		RefreshSecret: secret,
+		RefreshExp:    refreshExp,
+		IdExp:         idExp,
 	})
 
 	//::: USER  SERVICE
 	gi := gin.Default()
 
+	baseUrl := os.Getenv("ACCOUNT_API_URL")
 	handler.NewHandler(&handler.Config{
 		Engine:        gi,
 		UserService:   userService,
 		TokenServiceI: tokenService,
+		BaseURL:       baseUrl,
 	})
 
 	return gi, nil

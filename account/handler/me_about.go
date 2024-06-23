@@ -22,7 +22,8 @@ func (h *Handler) MeAbout(ctx *gin.Context) {
 
 	uid := user.(*models.User).UID
 
-	user, err := h.UserService.Get(ctx, uid)
+	ginCtx := ctx.Request.Context()
+	user, err := h.UserService.Get(ginCtx, uid)
 	if err != nil {
 		log.Printf("Coudln't get user for id ::: %v", uid.String())
 

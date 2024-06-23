@@ -19,7 +19,7 @@ func (p PgUSerRepo) GetById(ctx context.Context, uid uuid.UUID) (*models.User, e
 
 	var user = new(models.User)
 
-	if err := p.DB.Get(user, query, uid); err != nil {
+	if err := p.DB.GetContext(ctx, user, query, uid); err != nil {
 		log.Printf("Couldn't get user for id  ::: %v with error ::: %v", uid, err.Error())
 
 		return nil, apprerrors.NewNotFound("uid", uid.String())
@@ -31,7 +31,7 @@ func (p PgUSerRepo) GetById(ctx context.Context, uid uuid.UUID) (*models.User, e
 func (p PgUSerRepo) Create(ctx context.Context, u *models.User) error {
 	query := `INSERT into users  (email,password) values ($1,$2) returning *`
 
-	err := p.DB.Get(u, query, u.Email, u.Password)
+	err := p.DB.GetContext(ctx, u, query, u.Email, u.Password)
 	if err != nil {
 		if pqError, ok := err.(*pq.Error); ok {
 			if pqError.Code.Name() == "unique_violation" {

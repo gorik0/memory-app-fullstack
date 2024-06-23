@@ -13,6 +13,8 @@ type TokenService struct {
 	PublKey *rsa.PublicKey
 
 	RefreshSecret string
+	RefreshExp    string
+	IdExp         string
 }
 
 type ConfigTokenService struct {
@@ -20,6 +22,9 @@ type ConfigTokenService struct {
 	PublKey *rsa.PublicKey
 
 	RefreshSecret string
+
+	RefreshExp string
+	IdExp      string
 }
 
 func NewTokenService(cfg *ConfigTokenService) models.TokenServiceI {
@@ -27,13 +32,15 @@ func NewTokenService(cfg *ConfigTokenService) models.TokenServiceI {
 		PrivKey:       cfg.PrivKey,
 		PublKey:       cfg.PublKey,
 		RefreshSecret: cfg.RefreshSecret,
+		RefreshExp:    cfg.RefreshExp,
+		IdExp:         cfg.IdExp,
 	}
 }
 
 func (t TokenService) GetPairForUser(context context.Context, u *models.User, prevIdToken string) (*models.TokenPair, error) {
 
 	//:::ID TOKEN generate
-	idToken, err := generateToken(u, t.PrivKey)
+	idToken, err := generateToken(u, t.PrivKey, t.IdExp)
 	if err != nil {
 		log.Printf("Coudldn't genereta token for user :::%v  with errror ::: %v \n", u, err)
 		e := apprerrors.NewInternal()
@@ -42,7 +49,7 @@ func (t TokenService) GetPairForUser(context context.Context, u *models.User, pr
 
 	//:::REFRESH TOKEN generate
 
-	refreshToken, err := generateRefreshToken(u.UID, t.RefreshSecret)
+	refreshToken, err := generateRefreshToken(u.UID, t.RefreshSecret, t.RefreshExp)
 	if err != nil {
 		log.Printf("Coudldn't genereta refresh token for user :::%v  with errror ::: %v \n", u, err)
 		e := apprerrors.NewInternal()

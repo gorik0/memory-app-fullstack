@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"log"
 	"memory-app/account/models"
+	"strconv"
 	"time"
 )
 
@@ -24,10 +25,16 @@ type IDTokenCustomClaims struct {
 	jwt.RegisteredClaims
 }
 
-func generateRefreshToken(uid uuid.UUID, secret string) (*RefreshToken, error) {
+func generateRefreshToken(uid uuid.UUID, secret string, exp string) (*RefreshToken, error) {
 	//:::PRE setup
+
+	exp64, err := strconv.ParseInt(exp, 0, 64)
+	if err != nil {
+		return nil, err
+	}
+
 	currentTime := time.Now()
-	tokenExp := currentTime.AddDate(0, 0, 3)
+	tokenExp := currentTime.Add(time.Duration(exp64) * time.Second)
 
 	tokenID, _ := uuid.NewRandom()
 	println(secret)
@@ -58,11 +65,15 @@ func generateRefreshToken(uid uuid.UUID, secret string) (*RefreshToken, error) {
 	}, nil
 }
 
-func generateToken(u *models.User, key *rsa.PrivateKey) (string, error) {
+func generateToken(u *models.User, key *rsa.PrivateKey, exp string) (string, error) {
 	{
 		//:::PRE setup
+		exp64, err := strconv.ParseInt(exp, 0, 64)
+		if err != nil {
+			return "", err
+		}
 		currentTime := time.Now().Unix()
-		tokenExp := currentTime + 60*15
+		tokenExp := currentTime + exp64
 
 		tokenID, _ := uuid.NewRandom()
 
