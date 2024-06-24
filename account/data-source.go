@@ -63,7 +63,6 @@ func postgresDbInit() (*sqlx.DB, error) {
 	user := os.Getenv("POSTGRES_USER")
 	connStr := fmt.Sprintf("dbname=%s user=%s password=%s host=%s port=%s sslmode=%s", dbname, user, password, host, port, sslmode)
 	//	::DB_CONNECT
-	println(connStr)
 	db, err := sqlx.Open("postgres", connStr)
 	if err != nil {
 		log.Println("Error while db connecting :::", err)

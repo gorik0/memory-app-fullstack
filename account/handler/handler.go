@@ -2,8 +2,11 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"memory-app/account/handler/middleware"
 	"memory-app/account/models"
+	"memory-app/account/models/apprerrors"
 	"net/http"
+	"time"
 )
 
 type Handler struct {
@@ -42,10 +45,11 @@ func (h *Handler) Details(ctx *gin.Context) {
 }
 
 type Config struct {
-	Engine        *gin.Engine
-	UserService   models.UserServiceI
-	TokenServiceI models.TokenServiceI
-	BaseURL       string
+	Engine         *gin.Engine
+	UserService    models.UserServiceI
+	TokenServiceI  models.TokenServiceI
+	BaseURL        string
+	HandlerTimeout time.Duration
 }
 
 func NewHandler(c *Config) {
@@ -55,6 +59,11 @@ func NewHandler(c *Config) {
 	}
 
 	group := c.Engine.Group(c.BaseURL)
+	if gin.Mode() != gin.TestMode {
+
+		group.Use(middleware.Timeout(c.HandlerTimeout, apprerrors.NewTimedOut()))
+
+	}
 	group.GET("/me", h.MeAbout)
 	group.POST("/signin", h.Signin)
 	group.POST("/signout", h.Signout)

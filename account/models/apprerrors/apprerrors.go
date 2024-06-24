@@ -18,7 +18,9 @@ func (e *Error) Error() string {
 }
 
 const (
-	Authorization   = "AUTHORIZATION"
+	Authorization      = "AUTHORIZATION"
+	ServiceUnavailable = "SERVICEUNAVAILABLE"
+
 	BadRequest      = "BADREQUEST"
 	Conflict        = "CONFLICT"
 	Internal        = "INTERNAL"
@@ -39,6 +41,10 @@ func (e *Error) Status() int {
 	case Conflict:
 		{
 			return http.StatusConflict
+		}
+	case ServiceUnavailable:
+		{
+			return http.StatusServiceUnavailable
 		}
 	case Internal:
 		{
@@ -82,6 +88,12 @@ func NewConflict(name, value string) *Error {
 	return &Error{
 		Type:    Conflict,
 		Message: fmt.Sprintf("Conflict for :: %v  with :: %v", name, value),
+	}
+}
+func NewTimedOut() *Error {
+	return &Error{
+		Type:    ServiceUnavailable,
+		Message: fmt.Sprintf("Request is timed out, seems liek service is unavailable"),
 	}
 }
 func NewInternal() *Error {

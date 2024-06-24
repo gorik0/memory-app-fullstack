@@ -125,7 +125,6 @@ func TestHandler_MeAbout(t *testing.T) {
 
 		assert.Equal(t, http.StatusInternalServerError, rr.Code)
 		mockUserService.AssertNotCalled(t, "Get", mock.Anything)
-		println("passed")
 		time.Sleep(time.Second)
 	})
 

@@ -37,7 +37,6 @@ func generateRefreshToken(uid uuid.UUID, secret string, exp string) (*RefreshTok
 	tokenExp := currentTime.Add(time.Duration(exp64) * time.Second)
 
 	tokenID, _ := uuid.NewRandom()
-	println(secret)
 	//:::CLAIMS setup
 	customClaims := RefreshTokenCustomClaims{
 		Uid: uid,

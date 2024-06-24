@@ -8,6 +8,8 @@ import (
 	"memory-app/account/models/repository"
 	"memory-app/account/service"
 	"os"
+	"strconv"
+	"time"
 )
 
 // ::: USER SERVICE / TOKEN SEWRVICE / USER REPO
@@ -62,11 +64,17 @@ func inject(ds *dataSources) (*gin.Engine, error) {
 	gi := gin.Default()
 
 	baseUrl := os.Getenv("ACCOUNT_API_URL")
+	handlerTimeoutString := os.Getenv("HANDLER_TIMEOUT")
+	handlerTimeout, err := strconv.Atoi(handlerTimeoutString)
+	if err != nil {
+		return nil, fmt.Errorf("parsing timeout  public key fiule  ::: %w", err)
+	}
 	handler.NewHandler(&handler.Config{
-		Engine:        gi,
-		UserService:   userService,
-		TokenServiceI: tokenService,
-		BaseURL:       baseUrl,
+		Engine:         gi,
+		UserService:    userService,
+		TokenServiceI:  tokenService,
+		BaseURL:        baseUrl,
+		HandlerTimeout: time.Duration(handlerTimeout) * time.Second,
 	})
 
 	return gi, nil

@@ -20,7 +20,6 @@ func (t tokenRedisRepository) SetRefreshToken(ctx context.Context, userId string
 		log.Printf("Could not SET refresh token to redis for userID/prevTokenId: %s/%s: %v\n", userId, tokenId, err)
 		return apprerrors.NewInternal()
 	}
-	println("done!")
 	return nil
 }
 

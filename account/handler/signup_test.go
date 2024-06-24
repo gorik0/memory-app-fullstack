@@ -79,7 +79,6 @@ func TestHandler_Signup(t *testing.T) {
 
 		router.ServeHTTP(rr, request)
 		assert.Equal(t, http.StatusBadRequest, rr.Code)
-		//println(rr.Body.String())
 		userServiceMock.AssertNotCalled(t, "Signup")
 
 	})
