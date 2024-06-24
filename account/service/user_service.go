@@ -12,6 +12,11 @@ type UserService struct {
 	UserRepository models.UserRepositoryI
 }
 
+func (u *UserService) Signin(ctx context.Context, user *models.User) error {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (u *UserService) Signup(context context.Context, user *models.User) error {
 	hash, err := generateHashPassword(user.Password)
 	if err != nil {

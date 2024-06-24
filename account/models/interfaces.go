@@ -10,6 +10,7 @@ import (
 type UserServiceI interface {
 	Get(context context.Context, uid uuid.UUID) (*User, error)
 	Signup(context.Context, *User) error
+	Signin(context.Context, *User) error
 }
 
 type TokenServiceI interface {

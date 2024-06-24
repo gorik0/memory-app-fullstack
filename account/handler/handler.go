@@ -14,12 +14,6 @@ type Handler struct {
 	TokenService models.TokenServiceI
 }
 
-func (h *Handler) Signin(ctx *gin.Context) {
-
-	ctx.JSON(http.StatusOK, gin.H{"say": "Signin"})
-
-}
-
 func (h *Handler) Signout(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"say": "Signout"})

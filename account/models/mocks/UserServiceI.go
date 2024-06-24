@@ -46,6 +46,24 @@ func (_m *UserServiceI) Get(_a0 context.Context, uid uuid.UUID) (*models.User, e
 	return r0, r1
 }
 
+// Signin provides a mock function with given fields: _a0, _a1
+func (_m *UserServiceI) Signin(_a0 context.Context, _a1 *models.User) error {
+	ret := _m.Called(_a0, _a1)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Signin")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *models.User) error); ok {
+		r0 = rf(_a0, _a1)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Signup provides a mock function with given fields: _a0, _a1
 func (_m *UserServiceI) Signup(_a0 context.Context, _a1 *models.User) error {
 	ret := _m.Called(_a0, _a1)
