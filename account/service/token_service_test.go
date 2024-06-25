@@ -109,7 +109,7 @@ func TestNewPairFromUser(t *testing.T) {
 		//::TOKE_ = tokN pair creating
 		tokenPair, err := tokenService.GetPairForUser(ctx, user, "")
 		assert.Error(t, err)
-		//::ID token parsing & asserting
+						//::ID token parsing & asserting
 
 		tokenRepoMock.AssertNotCalled(t, "DeleteRefreshToken")
 		_ = tokenPair

@@ -49,7 +49,7 @@ services:
         - POSTGRES_USER=gorik
 
     ports:
-      - "5432:5432"
+      - "5431:5432"
     #   Set a volume for data and initial sql script
     #   May configure initial db for future demo
     volumes:

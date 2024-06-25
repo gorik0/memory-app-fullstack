@@ -8,6 +8,9 @@ import (
 	"net/http"
 )
 
+type Rio struct {
+	name string
+}
 type SigninRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,gte=5"`
@@ -27,6 +30,7 @@ func (h *Handler) Signin(ctx *gin.Context) {
 		Email:    req.Email,
 		Password: req.Password,
 	}
+
 	err := h.UserService.Signin(ctx.Request.Context(), user)
 	if err != nil {
 		log.Printf("Coudln't signin ::: %s", err.Error())

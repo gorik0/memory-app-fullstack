@@ -38,5 +38,21 @@ func (u *UserRepository) GetById(ctx context.Context, uid uuid.UUID) (*models.Us
 	return r0, r1
 
 }
+func (u *UserRepository) GetByEmail(ctx context.Context, email string) (*models.User, error) {
+	ret := u.Called(ctx, email)
+
+	var r0 *models.User
+	if ret.Get(0) != nil {
+		r0 = ret.Get(0).(*models.User)
+	}
+
+	var r1 error
+	if ret.Get(1) != nil {
+		r1 = ret.Get(1).(error)
+	}
+
+	return r0, r1
+
+}
 
 var _ models.UserRepositoryI = &UserRepository{}

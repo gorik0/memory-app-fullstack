@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"log"
 	"memory-app/account/models"
+	"memory-app/account/models/apprerrors"
 )
 
 type UserService struct {
@@ -13,8 +14,29 @@ type UserService struct {
 }
 
 func (u *UserService) Signin(ctx context.Context, user *models.User) error {
-	//TODO implement me
-	panic("implement me")
+	userGetted, err := u.UserRepository.GetByEmail(ctx, user.Email)
+	if err != nil {
+		log.Printf("Unable get user  : %v\n", user)
+		return err
+	}
+
+	match, err := Compare(userGetted.Password, user.Password)
+	if err != nil {
+
+		e := apprerrors.NewAuthorization("Invalid passsword")
+		log.Printf("Invalid password!!!:::%s", err)
+		return e
+	}
+	if !match {
+		e := apprerrors.NewAuthorization("Invalid passsword (doesn't match")
+		log.Printf("Passwords doesn't match!!!")
+		return e
+	}
+
+	*user = *userGetted
+
+	return nil
+
 }
 
 func (u *UserService) Signup(context context.Context, user *models.User) error {

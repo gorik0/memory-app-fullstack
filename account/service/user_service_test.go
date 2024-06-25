@@ -9,6 +9,7 @@ import (
 	"memory-app/account/models"
 	"memory-app/account/models/apprerrors"
 	"memory-app/account/models/mocks"
+	"net/http"
 	"testing"
 )
 
@@ -102,6 +103,85 @@ func TestSignup(t *testing.T) {
 		assert.Equal(t, mockError, err)
 
 		mockUserRepo.AssertExpectations(t)
+	})
+
+}
+
+func TestSignin(t *testing.T) {
+	//::: USER REPO setup
+
+	mockURep := new(mocks.UserRepository)
+
+	//::: DATA usecase setup
+
+	//: 		context
+	ctx := context.Background()
+
+	//: 		password
+	passwordRequest := "12345"
+	passwordRequestHashed, _ := generateHashPassword(passwordRequest)
+
+	//: 		email
+	email_userExist_passwordMatch := "1test@st.te"
+	email_userNOTExist_ := "2test@st.te"
+	email_userExist_passwordNOTMatch := "3test@st.te"
+
+	//: 		return user
+	user_psw_match := &models.User{
+		Email:    email_userExist_passwordMatch,
+		Password: passwordRequestHashed,
+	}
+	user_psw_not_match := &models.User{
+		Email:    email_userExist_passwordNOTMatch,
+		Password: passwordRequestHashed + "wrong_password",
+	}
+	//:::USER REPO methods setup
+	mockURep.On("GetByEmail", mock.AnythingOfType("context.backgroundCtx"), email_userExist_passwordMatch).Return(user_psw_match, nil)
+	errToReturn := apprerrors.NewNotFound("email", "email")
+	mockURep.On("GetByEmail", mock.AnythingOfType("context.backgroundCtx"), email_userNOTExist_).Return(nil, errToReturn)
+	mockURep.On("GetByEmail", mock.AnythingOfType("context.backgroundCtx"), email_userExist_passwordNOTMatch).Return(user_psw_not_match, nil)
+
+	//::: USER SERVICE create
+	userService := NewUserService(&UserServiceConfig{UserRepo: mockURep})
+
+	t.Run("userExist_passwordMatch", func(t *testing.T) {
+		//:::create request
+		userRequest := &models.User{
+
+			Email:    email_userExist_passwordMatch,
+			Password: passwordRequest,
+		}
+
+		err := userService.Signin(ctx, userRequest)
+
+		//:ASSERT NO ERRORS
+		assert.NoError(t, err)
+		//:ASSERT password MATCHES
+		assert.Equal(t, userRequest.Password, passwordRequestHashed)
+
+	})
+	t.Run("userNOTExist_", func(t *testing.T) {
+
+		userRequest := &models.User{
+
+			Email:    email_userNOTExist_,
+			Password: passwordRequest,
+		}
+		err := userService.Signin(ctx, userRequest)
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, errToReturn)
+
+	})
+	t.Run("userExist_passwordNOTMatch", func(t *testing.T) {
+
+		userRequest := &models.User{
+
+			Email:    email_userExist_passwordNOTMatch,
+			Password: passwordRequest,
+		}
+		err := userService.Signin(ctx, userRequest)
+		assert.Equal(t, apprerrors.Status(err), http.StatusUnauthorized)
+
 	})
 
 }

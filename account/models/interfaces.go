@@ -18,6 +18,7 @@ type TokenServiceI interface {
 }
 type UserRepositoryI interface {
 	GetById(ctx context.Context, uid uuid.UUID) (*User, error)
+	GetByEmail(ctx context.Context, email string) (*User, error)
 	Create(ctx context.Context, u *User) error
 }
 
