@@ -1,6 +1,21 @@
 package models
 
+import "github.com/google/uuid"
+
+type RefreshToken struct {
+	ID  uuid.UUID `json:"-"`
+	UID uuid.UUID `json:"-"`
+	SS  string    `json:"refreshToken"`
+}
+
+// IDToken stores token properties that
+// are accessed in multiple application layers
+type IDToken struct {
+	SS string `json:"idToken"`
+}
+
+// TokenPair used for returning pairs of id and refresh tokens
 type TokenPair struct {
-	IdToken      string `json:"id_token"`
-	RefreshToken string `json:"refresh_token"`
+	IDToken
+	RefreshToken
 }

@@ -2,6 +2,7 @@ package service
 
 import (
 	"crypto/rsa"
+	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"log"
@@ -10,9 +11,10 @@ import (
 	"time"
 )
 
-type RefreshToken struct {
-	SS string
-	ID string
+type RefreshTokenData struct {
+	SS        string
+	ID        uuid.UUID
+	ExpiresIN time.Duration
 
 	Expired time.Duration
 }
@@ -25,7 +27,7 @@ type IDTokenCustomClaims struct {
 	jwt.RegisteredClaims
 }
 
-func generateRefreshToken(uid uuid.UUID, secret string, exp string) (*RefreshToken, error) {
+func generateRefreshToken(uid uuid.UUID, secret string, exp string) (*RefreshTokenData, error) {
 	//:::PRE setup
 
 	exp64, err := strconv.ParseInt(exp, 0, 64)
@@ -57,9 +59,9 @@ func generateRefreshToken(uid uuid.UUID, secret string, exp string) (*RefreshTok
 	}
 
 	//:::RETURN
-	return &RefreshToken{
+	return &RefreshTokenData{
 		SS:      signedToken,
-		ID:      tokenID.String(),
+		ID:      tokenID,
 		Expired: tokenExp.Sub(currentTime),
 	}, nil
 }
@@ -98,4 +100,32 @@ func generateToken(u *models.User, key *rsa.PrivateKey, exp string) (string, err
 		//:::RETURN
 		return signedToken, nil
 	}
+}
+
+func validateIDtoken(tokenString string, key *rsa.PublicKey) (*IDTokenCustomClaims, error) {
+	claims := &IDTokenCustomClaims{}
+	println(tokenString)
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return key, nil
+	})
+	if err != nil {
+		log.Println("Error while parsing tokenString with pub key ::: ", err.Error())
+		println(err)
+		return nil, fmt.Errorf("parsing tokenString with pub kye")
+	}
+
+	if !token.Valid {
+		log.Println("Token is invalid!!! ::: ", err.Error())
+		return nil, fmt.Errorf("invalid token")
+
+	}
+
+	claims, ok := token.Claims.(*IDTokenCustomClaims)
+	if !ok {
+		log.Println("Error while type assertion token-claims ::: ", err.Error())
+		return nil, fmt.Errorf("Error while type assertion token-claims")
+	}
+
+	return claims, nil
+
 }

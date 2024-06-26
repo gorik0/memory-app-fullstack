@@ -19,6 +19,16 @@ type TokenService struct {
 	TokenRepository models.TokenRepository
 }
 
+func (t TokenService) ValidateIDToken(token string) (*models.User, error) {
+	claims, err := validateIDtoken(token, t.PublKey)
+	if err != nil {
+		log.Printf("Unable to validate or parse idToken - Error: %v\n", err)
+		return nil, apprerrors.NewAuthorization("Unable to verify user from idToken")
+	}
+	return claims.User, nil
+
+}
+
 type ConfigTokenService struct {
 	PrivKey *rsa.PrivateKey
 	PublKey *rsa.PublicKey
@@ -62,7 +72,7 @@ func (t TokenService) GetPairForUser(ctx context.Context, u *models.User, prevId
 	}
 	//::: REDIS job
 
-	err = t.TokenRepository.SetRefreshToken(ctx, u.UID.String(), refreshToken.ID, refreshToken.Expired)
+	err = t.TokenRepository.SetRefreshToken(ctx, u.UID.String(), refreshToken.ID.String(), refreshToken.Expired)
 	if err != nil {
 		log.Printf("Coudldn't set refresh in REDIS :::%v  with errror ::: %v \n", u, err)
 		e := apprerrors.NewInternal()
@@ -81,8 +91,8 @@ func (t TokenService) GetPairForUser(ctx context.Context, u *models.User, prevId
 	//:::RETURN TOKEN pair
 
 	return &models.TokenPair{
-		IdToken:      idToken,
-		RefreshToken: refreshToken.SS,
+		IDToken:      models.IDToken{SS: idToken},
+		RefreshToken: models.RefreshToken{SS: refreshToken.SS, UID: u.UID, ID: refreshToken.ID},
 	}, nil
 
 }

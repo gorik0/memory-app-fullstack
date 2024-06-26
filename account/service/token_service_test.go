@@ -65,7 +65,7 @@ func TestNewPairFromUser(t *testing.T) {
 		//::ID token parsing & asserting
 
 		customClaims := &IDTokenCustomClaims{}
-		_, err = jwt.ParseWithClaims(tokenPair.IdToken, customClaims, func(token *jwt.Token) (interface{}, error) {
+		_, err = jwt.ParseWithClaims(tokenPair.IDToken.SS, customClaims, func(token *jwt.Token) (interface{}, error) {
 			return publicKey, nil
 		})
 		assert.NoError(t, err)
@@ -90,8 +90,8 @@ func TestNewPairFromUser(t *testing.T) {
 
 		//::REFRESH parsing & asserting
 		customClaimsRefresh := &RefreshTokenCustomClaims{}
-		_, err = jwt.ParseWithClaims(tokenPair.IdToken, customClaimsRefresh, func(token *jwt.Token) (interface{}, error) {
-			return publicKey, nil
+		_, err = jwt.ParseWithClaims(tokenPair.RefreshToken.SS, customClaimsRefresh, func(token *jwt.Token) (interface{}, error) {
+			return []byte(secret), nil
 		})
 		assert.NoError(t, err)
 		//	::ASSERT expired dates
@@ -109,7 +109,7 @@ func TestNewPairFromUser(t *testing.T) {
 		//::TOKE_ = tokN pair creating
 		tokenPair, err := tokenService.GetPairForUser(ctx, user, "")
 		assert.Error(t, err)
-						//::ID token parsing & asserting
+		//::ID token parsing & asserting
 
 		tokenRepoMock.AssertNotCalled(t, "DeleteRefreshToken")
 		_ = tokenPair

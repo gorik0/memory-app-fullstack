@@ -17,7 +17,6 @@ type PgUSerRepo struct {
 func (p PgUSerRepo) GetByEmail(ctx context.Context, email string) (*models.User, error) {
 	var user = &models.User{}
 
-
 	query := `SELECT * from users where email=$1`
 	println(email)
 	err := p.DB.GetContext(ctx, user, query, email)
@@ -33,7 +32,7 @@ func (p PgUSerRepo) GetByEmail(ctx context.Context, email string) (*models.User,
 }
 
 func (p PgUSerRepo) GetById(ctx context.Context, uid uuid.UUID) (*models.User, error) {
-	query := `SELECT * from   users where id = $1 `
+	query := `SELECT * from   users where uid = $1 `
 
 	var user = new(models.User)
 

@@ -189,8 +189,8 @@ func TestHandler_Signup(t *testing.T) {
 		//::TOKEN SERVICE mock via mockery
 
 		respToken := &models.TokenPair{
-			IdToken:      "99999",
-			RefreshToken: "000000",
+			IDToken:      models.IDToken{SS: "12213"},
+			RefreshToken: models.RefreshToken{SS: "12213"},
 		}
 
 		var tokenServiceMock = new(mocks.TokenService)

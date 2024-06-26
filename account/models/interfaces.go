@@ -15,6 +15,7 @@ type UserServiceI interface {
 
 type TokenServiceI interface {
 	GetPairForUser(context context.Context, u *User, prevIdToken string) (*TokenPair, error)
+	ValidateIDToken(token string) (*User, error)
 }
 type UserRepositoryI interface {
 	GetById(ctx context.Context, uid uuid.UUID) (*User, error)
