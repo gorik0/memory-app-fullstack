@@ -20,12 +20,6 @@ func (h *Handler) Signout(ctx *gin.Context) {
 
 }
 
-func (h *Handler) Tokens(ctx *gin.Context) {
-
-	ctx.JSON(http.StatusOK, gin.H{"say": "Tokens"})
-
-}
-
 func (h *Handler) Image(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"say": "Image"})

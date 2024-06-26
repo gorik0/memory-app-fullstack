@@ -129,3 +129,29 @@ func validateIDtoken(tokenString string, key *rsa.PublicKey) (*IDTokenCustomClai
 	return claims, nil
 
 }
+
+func validateRefreshToken(tokenToValidate string, secret string) (*RefreshTokenCustomClaims, error) {
+	claims := &RefreshTokenCustomClaims{}
+	token, err := jwt.ParseWithClaims(tokenToValidate, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secret), nil
+	})
+	if err != nil {
+		log.Println("Error while parsing tokenString with secret key ::: ", err.Error())
+		println(err)
+		return nil, fmt.Errorf("parsing tokenString with secrte kye")
+	}
+
+	if !token.Valid {
+		log.Println("Token is invalid!!! ::: ", err.Error())
+		return nil, fmt.Errorf("invalid token")
+
+	}
+
+	claims, ok := token.Claims.(*RefreshTokenCustomClaims)
+	if !ok {
+		log.Println("Error while type assertion token-claims ::: ", err.Error())
+		return nil, fmt.Errorf("Error while type assertion token-claims")
+	}
+
+	return claims, nil
+}
