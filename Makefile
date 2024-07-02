@@ -5,7 +5,7 @@
 PWD = $(shell pwd)
 ACCTPATH = $(PWD)
 PATH_TO_MIGRATIONS = $(ACCTPATH)/migrations
-DATABASE_URL = gorik:123@localhost:5432/postgres?sslmode=disable
+DATABASE_URL = gorik:123@localhost:5431/postgres?sslmode=disable
 
 N=1
 create-keypair:

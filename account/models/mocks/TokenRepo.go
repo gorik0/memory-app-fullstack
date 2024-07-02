@@ -11,6 +11,18 @@ type TokenRepo struct {
 	mock.Mock
 }
 
+func (t *TokenRepo) DeleteUserRefreshToken(ctx context.Context, userId string) error {
+	ret := t.Called(ctx, userId)
+
+	var r1 error
+
+	if ret.Get(0) != nil {
+		r1 = ret.Get(0).(error)
+	}
+	return r1
+
+}
+
 func (t *TokenRepo) SetRefreshToken(ctx context.Context, userId string, tokenId string, expiTime time.Duration) error {
 	called := t.Called(ctx, userId, tokenId, expiTime)
 

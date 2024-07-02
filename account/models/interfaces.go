@@ -11,10 +11,12 @@ type UserServiceI interface {
 	Get(context context.Context, uid uuid.UUID) (*User, error)
 	Signup(context.Context, *User) error
 	Signin(context.Context, *User) error
+	UpdateDetail(ctx context.Context, u *User) error
 }
 
 type TokenServiceI interface {
 	GetPairForUser(context context.Context, u *User, prevIdToken string) (*TokenPair, error)
+	Signout(context context.Context, uid uuid.UUID) error
 	ValidateIDToken(token string) (*User, error)
 	ValidateRefreshToken(token string) (*RefreshToken, error)
 }
@@ -22,9 +24,12 @@ type UserRepositoryI interface {
 	GetById(ctx context.Context, uid uuid.UUID) (*User, error)
 	GetByEmail(ctx context.Context, email string) (*User, error)
 	Create(ctx context.Context, u *User) error
+	Update(ctx context.Context, u *User) error
 }
 
 type TokenRepository interface {
 	SetRefreshToken(ctx context.Context, userId string, tokenId string, expiTime time.Duration) error
+
 	DeleteRefreshToken(ctx context.Context, userId string, prevTokenId string) error
+	DeleteUserRefreshToken(ctx context.Context, userId string) error
 }

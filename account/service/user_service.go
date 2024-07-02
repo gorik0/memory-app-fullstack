@@ -13,10 +13,15 @@ type UserService struct {
 	UserRepository models.UserRepositoryI
 }
 
+func (u *UserService) UpdateDetail(ctx context.Context, user *models.User) error {
+
+	return u.UserRepository.Update(ctx, user)
+}
+
 func (u *UserService) Signin(ctx context.Context, user *models.User) error {
 	userGetted, err := u.UserRepository.GetByEmail(ctx, user.Email)
 	if err != nil {
-		log.Printf("Unable get user  : %v\n", user)
+		log.Printf("Unnable get user  : %v\n", user)
 		return err
 	}
 

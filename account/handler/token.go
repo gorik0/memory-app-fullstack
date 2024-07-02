@@ -47,7 +47,6 @@ func (h *Handler) Tokens(ctx *gin.Context) {
 		ctx.JSON(apprerrors.Status(err), gin.H{
 			"error": err,
 		})
-		пше
 	}
 	//	:: TOKEN pair return
 	ctx.JSON(http.StatusOK, gin.H{

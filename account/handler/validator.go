@@ -2,6 +2,7 @@ package handler
 
 import (
 	errors2 "errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"log"
@@ -18,6 +19,7 @@ type invalidArg struct {
 func BindData(ctx *gin.Context, req interface{}) bool {
 
 	err := ctx.ShouldBind(&req)
+	fmt.Println("~!!!!!!!!", req)
 	if err != nil {
 		log.Printf("Bad request, coudln't unmarshal to USER  ::: %s \n", err)
 		e := apprerrors.NewBadRequest(err.Error())
@@ -45,8 +47,10 @@ func BindData(ctx *gin.Context, req interface{}) bool {
 			return false
 
 		}
+		fmt.Println("Something went wrong", err)
 
 		return false
 	}
+	fmt.Println("YEEES")
 	return true
 }

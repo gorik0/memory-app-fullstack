@@ -14,21 +14,9 @@ type Handler struct {
 	TokenService models.TokenServiceI
 }
 
-func (h *Handler) Signout(ctx *gin.Context) {
-
-	ctx.JSON(http.StatusOK, gin.H{"say": "Signout"})
-
-}
-
 func (h *Handler) Image(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"say": "Image"})
-
-}
-
-func (h *Handler) Details(ctx *gin.Context) {
-
-	ctx.JSON(http.StatusOK, gin.H{"say": "Details"})
 
 }
 
@@ -51,18 +39,20 @@ func NewHandler(c *Config) {
 
 		group.Use(middleware.Timeout(c.HandlerTimeout, apprerrors.NewTimedOut()))
 		group.GET("/me", middleware.AuthUser(c.TokenServiceI), h.MeAbout)
+		group.POST("/signout", middleware.AuthUser(c.TokenServiceI), h.Signout)
+		group.PUT("/details", middleware.AuthUser(c.TokenServiceI), h.Details)
 
 	} else {
 
+		group.PUT("/details", h.Details)
+		group.POST("/signout", h.Signout)
 		group.GET("/me", h.MeAbout)
 	}
 
 	group.POST("/signin", h.Signin)
-	group.POST("/signout", h.Signout)
 	group.POST("/signup", h.Signup)
 	group.POST("/tokens", h.Tokens)
 	group.POST("/image", h.Image)
 	group.DELETE("/image", h.Image)
-	group.PUT("/details", h.Details)
 
 }

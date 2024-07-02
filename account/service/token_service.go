@@ -20,6 +20,10 @@ type TokenService struct {
 	TokenRepository models.TokenRepository
 }
 
+func (t TokenService) Signout(context context.Context, uid uuid.UUID) error {
+	return t.TokenRepository.DeleteUserRefreshToken(context, uid.String())
+}
+
 func (t TokenService) ValidateRefreshToken(token string) (*models.RefreshToken, error) {
 	claims, err := validateRefreshToken(token, t.RefreshSecret)
 	if err != nil {

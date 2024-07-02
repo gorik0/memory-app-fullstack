@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"io/ioutil"
 	"memory-app/account/models"
+	"memory-app/account/models/apprerrors"
 	"memory-app/account/models/mocks"
 	"testing"
 	"time"
@@ -116,4 +117,43 @@ func TestNewPairFromUser(t *testing.T) {
 
 	})
 
+}
+
+func TestSignout(t *testing.T) {
+
+	//	::: USECASE
+	idFail := uuid.New()
+	idSuccess := uuid.New()
+
+	//	::: MOCK CREATING
+
+	mockTokenRepo := new(mocks.TokenRepo)
+	mockTokenRepo.On("DeleteUserRefreshToken", mock.AnythingOfType("context.backgroundCtx"), idSuccess.String()).Return(nil)
+	mockTokenRepo.On("DeleteUserRefreshToken", mock.AnythingOfType("context.backgroundCtx"), idFail.String()).Return(apprerrors.NewInternal())
+
+	//:::PARAM REQUired
+
+	tokenService := NewTokenService(&ConfigTokenService{
+
+		TokenRepository: mockTokenRepo,
+	})
+	//:::TEST START
+	t.Run("Success", func(t *testing.T) {
+		ctx := context.Background()
+
+		err := tokenService.Signout(ctx, idSuccess)
+		assert.NoError(t, err)
+
+	})
+	t.Run("Fail", func(t *testing.T) {
+		ctx := context.Background()
+
+		err := tokenService.Signout(ctx, idFail)
+		assert.Error(t, err)
+		println(err)
+
+		appErr, ok := err.(*apprerrors.Error)
+		assert.True(t, ok)
+		assert.EqualValues(t, appErr.Type, apprerrors.Internal)
+	})
 }

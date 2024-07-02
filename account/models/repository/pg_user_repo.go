@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
@@ -12,6 +13,24 @@ import (
 
 type PgUSerRepo struct {
 	DB *sqlx.DB
+}
+
+func (p PgUSerRepo) Update(ctx context.Context, u *models.User) error {
+	query := `UPDATE users SET name=:name, email=:email where uid=:Ёuid returning *`
+	fmt.Println("!!!!!!!", u)
+
+	nstmt, err := p.DB.PrepareNamedContext(ctx, query)
+	if err != nil {
+		log.Printf("Error preparing query: %v", err)
+		return apprerrors.NewInternal()
+	}
+	err = nstmt.GetContext(ctx, u, u)
+	if err != nil {
+		log.Printf("Error executing query: %v", err)
+		return apprerrors.NewInternal()
+	}
+	fmt.Println("222!!!!!!!", u)
+	return nil
 }
 
 func (p PgUSerRepo) GetByEmail(ctx context.Context, email string) (*models.User, error) {
