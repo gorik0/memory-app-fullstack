@@ -16,6 +16,19 @@ type UserServiceI struct {
 	mock.Mock
 }
 
+func (_m *UserServiceI) UpdateDetail(ctx context.Context, u *models.User) error {
+	ret := _m.Called(ctx, u)
+	var r0 error
+	if ret.Get(0)!=nil {
+		r0 = ret.Get(0).(error)
+	}
+	return r0
+
+
+}
+
+var _ models.UserServiceI = &UserServiceI{}
+
 // Get provides a mock function with given fields: _a0, uid
 func (_m *UserServiceI) Get(_a0 context.Context, uid uuid.UUID) (*models.User, error) {
 	ret := _m.Called(_a0, uid)

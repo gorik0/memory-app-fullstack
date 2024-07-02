@@ -25,7 +25,7 @@ func (h *Handler) Details(ctx *gin.Context) {
 	if !ok {
 		return
 	}
-	fmt.Println(req)
+	fmt.Println("REQQQQ", req)
 	user := models.User{
 		UID:     userRequest.UID,
 		Email:   req.Email,

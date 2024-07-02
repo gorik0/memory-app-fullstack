@@ -16,7 +16,7 @@ type PgUSerRepo struct {
 }
 
 func (p PgUSerRepo) Update(ctx context.Context, u *models.User) error {
-	query := `UPDATE users SET name=:name, email=:email where uid=:Ёuid returning *`
+	query := `UPDATE users SET name=:name, email=:email where uid=:uid returning *`
 	fmt.Println("!!!!!!!", u)
 
 	nstmt, err := p.DB.PrepareNamedContext(ctx, query)

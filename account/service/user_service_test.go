@@ -185,3 +185,31 @@ func TestSignin(t *testing.T) {
 	})
 
 }
+
+func TestUpdate(t *testing.T) {
+	//	::: USECASES
+	userFail := models.User{Email: "sd"}
+	userSuccess := models.User{Email: "s0"}
+	//	::; MOCK CREATING
+	mo := new(mocks.UserRepository)
+	mo.On("Update", mock.AnythingOfType("context.backgroundCtx"), &userSuccess).Return(nil)
+	mo.On("Update", mock.AnythingOfType("context.backgroundCtx"), &userFail).Return(fmt.Errorf("Somw error"))
+
+	//	::: REQUIRED PARAM
+
+	ctx := context.Background()
+	service := NewUserService(&UserServiceConfig{UserRepo: mo})
+
+	//	::: TEST
+
+	t.Run("userFail", func(t *testing.T) {
+
+		err := service.UpdateDetail(ctx, &userFail)
+		assert.Error(t, err)
+
+	})
+	t.Run("userSuccess", func(t *testing.T) {
+		err := service.UpdateDetail(ctx, &userSuccess)
+		assert.NoError(t, err)
+	})
+}

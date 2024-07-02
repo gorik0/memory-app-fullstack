@@ -19,7 +19,7 @@ type invalidArg struct {
 func BindData(ctx *gin.Context, req interface{}) bool {
 
 	err := ctx.ShouldBind(&req)
-	fmt.Println("~!!!!!!!!", req)
+	fmt.Println("~!! !!!!!!", req)
 	if err != nil {
 		log.Printf("Bad request, coudln't unmarshal to USER  ::: %s \n", err)
 		e := apprerrors.NewBadRequest(err.Error())
