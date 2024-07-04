@@ -15,6 +15,21 @@ type PgUSerRepo struct {
 	DB *sqlx.DB
 }
 
+func (p PgUSerRepo) UpdateImage(ctx context.Context, uid uuid.UUID, imageURL string) (*models.User, error) {
+	query := `UPDATE users SET image_url = $1 WHERE uid = $2 returning *`
+
+	user := &models.User{}
+	err := p.DB.GetContext(ctx, user, query, imageURL, uid)
+	if err != nil {
+		fmt.Println("Failed to update user", err.Error())
+		return nil, apprerrors.NewInternal()
+
+	}
+
+	return user, nil
+
+}
+
 func (p PgUSerRepo) Update(ctx context.Context, u *models.User) error {
 	query := `UPDATE users SET name=:name, email=:email where uid=:uid returning *`
 	fmt.Println("!!!!!!!", u)

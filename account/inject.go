@@ -18,8 +18,11 @@ func inject(ds *dataSources) (*gin.Engine, error) {
 	userRepo := repository.PgUSerRepo{
 		DB: ds.DB,
 	}
+
+	imageRepo := repository.ImageRepository{PathToFile: "./images/"}
 	userService := service.NewUserService(&service.UserServiceConfig{
-		UserRepo: userRepo,
+		UserRepo:  userRepo,
+		ImageRepo: &imageRepo,
 	})
 	//::: TOKEN  SERVICE
 
@@ -75,6 +78,7 @@ func inject(ds *dataSources) (*gin.Engine, error) {
 		TokenServiceI:  tokenService,
 		BaseURL:        baseUrl,
 		HandlerTimeout: time.Duration(handlerTimeout) * time.Second,
+		MaxBytesSize:   10 * 1024 * 1024,
 	})
 
 	return gi, nil

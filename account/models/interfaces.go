@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"github.com/google/uuid"
+	"mime/multipart"
 	"time"
 )
 
@@ -12,6 +13,8 @@ type UserServiceI interface {
 	Signup(context.Context, *User) error
 	Signin(context.Context, *User) error
 	UpdateDetail(ctx context.Context, u *User) error
+	ClearProfileImage(ctx context.Context, uid uuid.UUID) error
+	SetProfileImage(ctx context.Context, uid uuid.UUID, imageFileHeader *multipart.FileHeader) (*User, error)
 }
 
 type TokenServiceI interface {
@@ -25,6 +28,7 @@ type UserRepositoryI interface {
 	GetByEmail(ctx context.Context, email string) (*User, error)
 	Create(ctx context.Context, u *User) error
 	Update(ctx context.Context, u *User) error
+	UpdateImage(ctx context.Context, uid uuid.UUID, imageURL string) (*User, error)
 }
 
 type TokenRepository interface {
@@ -32,4 +36,9 @@ type TokenRepository interface {
 
 	DeleteRefreshToken(ctx context.Context, userId string, prevTokenId string) error
 	DeleteUserRefreshToken(ctx context.Context, userId string) error
+}
+
+type ImageRepository interface {
+	DeleteProfile(ctx context.Context, objName string) error
+	UpdateProfile(ctx context.Context, objName string, imageFile multipart.File) (string, error)
 }

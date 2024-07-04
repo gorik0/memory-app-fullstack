@@ -5,19 +5,13 @@ import (
 	"memory-app/account/handler/middleware"
 	"memory-app/account/models"
 	"memory-app/account/models/apprerrors"
-	"net/http"
 	"time"
 )
 
 type Handler struct {
 	UserService  models.UserServiceI
 	TokenService models.TokenServiceI
-}
-
-func (h *Handler) Image(ctx *gin.Context) {
-
-	ctx.JSON(http.StatusOK, gin.H{"say": "Image"})
-
+	MaxBytesSize int64
 }
 
 type Config struct {
@@ -26,12 +20,14 @@ type Config struct {
 	TokenServiceI  models.TokenServiceI
 	BaseURL        string
 	HandlerTimeout time.Duration
+	MaxBytesSize   int64
 }
 
 func NewHandler(c *Config) {
 	h := Handler{
 		UserService:  c.UserService,
 		TokenService: c.TokenServiceI,
+		MaxBytesSize: c.MaxBytesSize,
 	}
 
 	group := c.Engine.Group(c.BaseURL)
@@ -41,8 +37,12 @@ func NewHandler(c *Config) {
 		group.GET("/me", middleware.AuthUser(c.TokenServiceI), h.MeAbout)
 		group.POST("/signout", middleware.AuthUser(c.TokenServiceI), h.Signout)
 		group.PUT("/details", middleware.AuthUser(c.TokenServiceI), h.Details)
+		group.POST("/image", middleware.AuthUser(c.TokenServiceI), h.Image)
+		group.DELETE("/image", middleware.AuthUser(c.TokenServiceI), h.ImageDelete)
 
 	} else {
+		group.POST("/image", h.ImageDelete)
+		group.DELETE("/image", h.Image)
 
 		group.PUT("/details", h.Details)
 		group.POST("/signout", h.Signout)
@@ -52,7 +52,5 @@ func NewHandler(c *Config) {
 	group.POST("/signin", h.Signin)
 	group.POST("/signup", h.Signup)
 	group.POST("/tokens", h.Tokens)
-	group.POST("/image", h.Image)
-	group.DELETE("/image", h.Image)
 
 }
