@@ -16,7 +16,7 @@ func (h *Handler) Image(ctx *gin.Context) {
 	ctx.Request.Body = http.MaxBytesReader(ctx.Writer, ctx.Request.Body, h.MaxBytesSize)
 
 	//::: GET IMAGE
-	file, err := ctx.FormFile("file")
+	file, err := ctx.FormFile("imageFile")
 	/*
 		//::ERROR ON
 		errors:
@@ -37,6 +37,7 @@ func (h *Handler) Image(ctx *gin.Context) {
 		}
 		e := apprerrors.NewBadRequest(fmt.Sprintf("Unable  to parse file"))
 		ctx.JSON(e.Status(), gin.H{"err": e})
+		return
 	}
 
 	if file == nil {
@@ -59,9 +60,13 @@ func (h *Handler) Image(ctx *gin.Context) {
 	//:: UPDATE TO USER SERVICE
 
 	context := ctx.Request.Context()
-	image, err := h.UserService.SetProfileImage(context, user.UID, file)
+	userUpdated, err := h.UserService.SetProfileImage(context, user.UID, file)
 
-	ctx.JSON(http.StatusOK, gin.H{"image": image})
+	if err != nil {
+		fmt.Println("set profile image err:", err)
+		ctx.JSON(apprerrors.Status(err), gin.H{"err": err})
+	}
+	ctx.JSON(http.StatusOK, gin.H{"image": userUpdated.ImageURL})
 
 }
 

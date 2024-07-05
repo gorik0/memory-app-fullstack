@@ -5,9 +5,10 @@ package mocks
 import (
 	context "context"
 	models "memory-app/account/models"
-	"mime/multipart"
 
 	mock "github.com/stretchr/testify/mock"
+
+	multipart "mime/multipart"
 
 	uuid "github.com/google/uuid"
 )
@@ -17,28 +18,23 @@ type UserServiceI struct {
 	mock.Mock
 }
 
+// ClearProfileImage provides a mock function with given fields: ctx, uid
 func (_m *UserServiceI) ClearProfileImage(ctx context.Context, uid uuid.UUID) error {
-	//TODO implement me
-	panic("implement me")
-}
+	ret := _m.Called(ctx, uid)
 
-func (_m *UserServiceI) SetProfileImage(ctx context.Context, uid uuid.UUID, imageFileHeader *multipart.FileHeader) (*models.User, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (_m *UserServiceI) UpdateDetail(ctx context.Context, u *models.User) error {
-	ret := _m.Called(ctx, u)
-	var r0 error
-	if ret.Get(0)!=nil {
-		r0 = ret.Get(0).(error)
+	if len(ret) == 0 {
+		panic("no return value specified for ClearProfileImage")
 	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) error); ok {
+		r0 = rf(ctx, uid)
+	} else {
+		r0 = ret.Error(0)
+	}
+
 	return r0
-
-
 }
-
-var _ models.UserServiceI = &UserServiceI{}
 
 // Get provides a mock function with given fields: _a0, uid
 func (_m *UserServiceI) Get(_a0 context.Context, uid uuid.UUID) (*models.User, error) {
@@ -63,6 +59,36 @@ func (_m *UserServiceI) Get(_a0 context.Context, uid uuid.UUID) (*models.User, e
 
 	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
 		r1 = rf(_a0, uid)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// SetProfileImage provides a mock function with given fields: ctx, uid, imageFileHeader
+func (_m *UserServiceI) SetProfileImage(ctx context.Context, uid uuid.UUID, imageFileHeader *multipart.FileHeader) (*models.User, error) {
+	ret := _m.Called(ctx, uid, imageFileHeader)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SetProfileImage")
+	}
+
+	var r0 *models.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID, *multipart.FileHeader) (*models.User, error)); ok {
+		return rf(ctx, uid, imageFileHeader)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID, *multipart.FileHeader) *models.User); ok {
+		r0 = rf(ctx, uid, imageFileHeader)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.User)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID, *multipart.FileHeader) error); ok {
+		r1 = rf(ctx, uid, imageFileHeader)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -99,6 +125,24 @@ func (_m *UserServiceI) Signup(_a0 context.Context, _a1 *models.User) error {
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, *models.User) error); ok {
 		r0 = rf(_a0, _a1)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UpdateDetail provides a mock function with given fields: ctx, u
+func (_m *UserServiceI) UpdateDetail(ctx context.Context, u *models.User) error {
+	ret := _m.Called(ctx, u)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateDetail")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *models.User) error); ok {
+		r0 = rf(ctx, u)
 	} else {
 		r0 = ret.Error(0)
 	}

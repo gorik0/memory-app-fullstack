@@ -41,8 +41,8 @@ func NewHandler(c *Config) {
 		group.DELETE("/image", middleware.AuthUser(c.TokenServiceI), h.ImageDelete)
 
 	} else {
-		group.POST("/image", h.ImageDelete)
-		group.DELETE("/image", h.Image)
+		group.POST("/image", h.Image)
+		group.DELETE("/image", h.ImageDelete)
 
 		group.PUT("/details", h.Details)
 		group.POST("/signout", h.Signout)

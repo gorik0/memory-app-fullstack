@@ -23,6 +23,8 @@ type TokenServiceI interface {
 	ValidateIDToken(token string) (*User, error)
 	ValidateRefreshToken(token string) (*RefreshToken, error)
 }
+//go:generate mockery --name UserRepositoryI
+
 type UserRepositoryI interface {
 	GetById(ctx context.Context, uid uuid.UUID) (*User, error)
 	GetByEmail(ctx context.Context, email string) (*User, error)
@@ -37,6 +39,8 @@ type TokenRepository interface {
 	DeleteRefreshToken(ctx context.Context, userId string, prevTokenId string) error
 	DeleteUserRefreshToken(ctx context.Context, userId string) error
 }
+
+//go:generate mockery --name ImageRepository
 
 type ImageRepository interface {
 	DeleteProfile(ctx context.Context, objName string) error

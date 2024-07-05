@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"memory-app/account/models"
 	"memory-app/account/models/apprerrors"
+	"memory-app/account/models/fixture"
 	"memory-app/account/models/mocks"
 	"net/http"
 	"testing"
@@ -22,7 +23,7 @@ func TestGet(t *testing.T) {
 			UID: uid,
 		}
 
-		mockUserRepo := new(mocks.UserRepository)
+		mockUserRepo := new(mocks.UserRepositoryI)
 		mockUserRepo.On("GetById", mock.Anything, uid).Return(userExpected, nil)
 		userService := NewUserService(&UserServiceConfig{
 			UserRepo: mockUserRepo,
@@ -39,7 +40,7 @@ func TestGet(t *testing.T) {
 
 		uid, _ := uuid.NewRandom()
 
-		mockUserRepo := new(mocks.UserRepository)
+		mockUserRepo := new(mocks.UserRepositoryI)
 		mockUserRepo.On("GetById", mock.Anything, uid).Return(nil, fmt.Errorf("has no user"))
 		userService := NewUserService(&UserServiceConfig{
 			UserRepo: mockUserRepo,
@@ -64,7 +65,7 @@ func TestSignup(t *testing.T) {
 			Password: "111",
 		}
 
-		mockUserRepo := new(mocks.UserRepository)
+		mockUserRepo := new(mocks.UserRepositoryI)
 		mockUserRepo.On("Create", mock.AnythingOfType("context.todoCtx"), mock.AnythingOfType("*models.User")).
 			Run(func(args mock.Arguments) {
 
@@ -91,7 +92,7 @@ func TestSignup(t *testing.T) {
 
 		mockError := apprerrors.NewConflict("email", "gogogoo")
 
-		mockUserRepo := new(mocks.UserRepository)
+		mockUserRepo := new(mocks.UserRepositoryI)
 		mockUserRepo.On("Create", mock.AnythingOfType("context.todoCtx"), mock.AnythingOfType("*models.User")).Return(mockError)
 		userService := NewUserService(&UserServiceConfig{
 			UserRepo: mockUserRepo,
@@ -110,7 +111,7 @@ func TestSignup(t *testing.T) {
 func TestSignin(t *testing.T) {
 	//::: USER REPO setup
 
-	mockURep := new(mocks.UserRepository)
+	mockURep := new(mocks.UserRepositoryI)
 
 	//::: DATA usecase setup
 
@@ -191,7 +192,7 @@ func TestUpdate(t *testing.T) {
 	userFail := models.User{Email: "sd"}
 	userSuccess := models.User{Email: "s0"}
 	//	::; MOCK CREATING
-	mo := new(mocks.UserRepository)
+	mo := new(mocks.UserRepositoryI)
 	mo.On("Update", mock.AnythingOfType("context.backgroundCtx"), &userSuccess).Return(nil)
 	mo.On("Update", mock.AnythingOfType("context.backgroundCtx"), &userFail).Return(fmt.Errorf("Somw error"))
 
@@ -213,3 +214,80 @@ func TestUpdate(t *testing.T) {
 		assert.NoError(t, err)
 	})
 }
+
+func TestSetProfileImage(t *testing.T) {
+	//	::: USECASES
+	userFailGetUser := models.User{UID: uuid.New()}
+	userFailUpdateImage := models.User{UID: uuid.New()}
+	imageFileNameSuccess := "succeess"
+	imageFileNameFailImageRepo := "fail"
+	imageFileNameSuccessWithExt := imageFileNameSuccess + ".png"
+	imageFileName_FailImageRepo_WithExt := imageFileNameFailImageRepo + ".png"
+	userFailImageRepo := models.User{UID: uuid.New(), ImageURL: imageFileNameFailImageRepo}
+	user := models.User{UID: uuid.New(), ImageURL: imageFileNameSuccess}
+	//imageFileNameFailImageRepo:="fail"
+
+	//	::: REQUIRED PARAM
+
+	errGetUser := fmt.Errorf("fail to return user")
+	errImageUpdate := fmt.Errorf("Some errror")
+	errImageRepo := fmt.Errorf("Some eerrror ")
+	ctx := context.Background()
+	image := fixture.NewMultipartImage("egor.png", "image/png")
+	imageFileHeader := image.GetFormFile()
+	//imageFile,err:=imageFileHeader.Open()
+	//assert.NoError(t, err)
+
+	//	::; MOCK CREATING
+	moUser := new(mocks.UserRepositoryI)
+	moImage := new(mocks.ImageRepository)
+	moUser.On("GetById", mock.AnythingOfType("context.backgroundCtx"), user.UID).Return(&user, nil)
+	moUser.On("GetById", mock.AnythingOfType("context.backgroundCtx"), userFailImageRepo.UID).Return(&userFailImageRepo, nil)
+	moUser.On("GetById", mock.AnythingOfType("context.backgroundCtx"), userFailUpdateImage.UID).Return(&user, nil)
+	moUser.On("GetById", mock.AnythingOfType("context.backgroundCtx"), userFailGetUser.UID).Return(&user, errGetUser)
+	moUser.On("UpdateImage", mock.AnythingOfType("context.backgroundCtx"), user.UID, imageFileNameSuccessWithExt).Return(&user, nil)
+	moUser.On("UpdateImage", mock.AnythingOfType("context.backgroundCtx"), userFailImageRepo.UID, imageFileNameSuccessWithExt).Return(&user, nil)
+	moUser.On("UpdateImage", mock.AnythingOfType("context.backgroundCtx"), userFailUpdateImage.UID, imageFileNameSuccessWithExt).Return(&user, errImageUpdate)
+	moImage.On("UpdateProfile", mock.AnythingOfType("context.backgroundCtx"), imageFileNameSuccessWithExt, mock.AnythingOfType("multipart.sectionReadCloser")).Return(imageFileNameSuccessWithExt, nil)
+	moImage.On("UpdateProfile", mock.AnythingOfType("context.backgroundCtx"), imageFileName_FailImageRepo_WithExt, mock.AnythingOfType("multipart.sectionReadCloser")).Return("", errImageRepo)
+	userService := NewUserService(&UserServiceConfig{UserRepo: moUser, ImageRepo: moImage})
+	//	::: TEST
+
+	t.Run("Success", func(t *testing.T) {
+
+		userReturn, err := userService.SetProfileImage(ctx, user.UID, imageFileHeader)
+		assert.NoError(t, err)
+		fmt.Println(user)
+		fmt.Println(userReturn)
+		assert.Equal(t, user, *userReturn)
+
+	})
+	t.Run("FailGetUser", func(t *testing.T) {
+
+		_, err := userService.SetProfileImage(ctx, userFailGetUser.UID, imageFileHeader)
+		assert.Error(t, err)
+		assert.Equal(t, errGetUser, err)
+
+	})
+
+	t.Run("FailUpdateImageUser", func(t *testing.T) {
+
+		_, err := userService.SetProfileImage(ctx, userFailUpdateImage.UID, imageFileHeader)
+		assert.Error(t, err)
+		assert.Equal(t, errImageUpdate, err)
+
+	})
+	t.Run("FailImageRepo", func(t *testing.T) {
+
+		_, err := userService.SetProfileImage(ctx, userFailImageRepo.UID, imageFileHeader)
+		assert.Error(t, err)
+		assert.Equal(t, errImageRepo, err)
+
+	})
+
+}
+
+//success
+//errorGetUser
+//errorUpdateImage
+//errorImageRepo

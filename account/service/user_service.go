@@ -94,19 +94,19 @@ func (u *UserService) SetProfileImage(ctx context.Context, uid uuid.UUID, imageF
 }
 
 func objNameFromUrl(urlName string) (string, error) {
-	//if urlName == "" {
-	//	return uuid.New().String(), nil
-	//
-	//}
+	if urlName == "" {
+		return uuid.New().String(), nil
+
+	}
 	//parsed, err := url.Parse(urlName)
 	//if err != nil {
 	//	fmt.Println("Error parsing url:", err.Error())
 	//	return "", err
 	//
 	//}
-	//
+
 	//return path.Base(parsed.Path), nil
-	return uuid.New().String(), nil
+	return urlName, nil
 }
 
 func (u *UserService) UpdateDetail(ctx context.Context, user *models.User) error {
