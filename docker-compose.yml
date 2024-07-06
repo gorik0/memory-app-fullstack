@@ -56,6 +56,23 @@ services:
       - "./db:/var/lib/postgresql/data"
       # - ./init:/docker-entrypoint-initdb.d/
     command: ["postgres", "-c", "log_statement=all"]
+  account-client:
+      build:
+        context: ./account-client
+      image: account-client # if we don't give image name, traefik won't create router 🤷‍♂️
+
+      ports:
+        - "5173:5173"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.account-client.rule=Host(`account.localhost`) && PathPrefix(`/account`)"
+
+      volumes:
+        - ./account-client:/app
+        - /app/node_modules #avoid overwriting node_modules
+      depends_on:
+        - reverse-proxy
+
 volumes:
     pgdata_account:
     redisdata:

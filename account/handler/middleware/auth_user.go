@@ -41,7 +41,7 @@ func AuthUser(tokenServ models.TokenServiceI) gin.HandlerFunc {
 				}
 				err := apprerrors.NewBadRequest("See invalid arguments")
 				c.JSON(err.Status(), gin.H{
-					"err":         err,
+					"error":       err,
 					"invalidArgs": invalidArgs,
 				})
 
@@ -51,7 +51,7 @@ func AuthUser(tokenServ models.TokenServiceI) gin.HandlerFunc {
 
 			err := apprerrors.NewInternal()
 			c.JSON(err.Status(), gin.H{
-				"err": err,
+				"error": err,
 			})
 
 			c.Abort()
@@ -62,7 +62,7 @@ func AuthUser(tokenServ models.TokenServiceI) gin.HandlerFunc {
 		if len(headerSplitted) < 2 {
 			err := apprerrors.NewBadRequest("Token is not with correct format :::")
 			c.JSON(err.Status(), gin.H{
-				"err": err,
+				"error": err,
 			})
 
 			c.Abort()
